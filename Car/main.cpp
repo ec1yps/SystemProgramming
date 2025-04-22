@@ -58,17 +58,49 @@ public:
 	}
 };
 
+class Engine
+{
+	int fuel_consumption_per_hundred;
+public:
+	Engine(int fuel_cons_per_hundred)
+	{
+		cout << "Engine:" << endl;
+		this->fuel_consumption_per_hundred = fuel_cons_per_hundred;
+		cout << "Engine is ready" << endl;
+	}
+	~Engine()
+	{
+		cout << "Engine is over" << endl;
+	}
+
+	double fuel_cons_per_sec(int speed)
+	{
+		if (speed == 0) return 0.0003;
+		else
+		{
+			return((double)(fuel_consumption_per_hundred * speed) / 360000);
+		}
+	}
+};
+
 void main()
 {
 	setlocale(LC_ALL, "");
+
+	Engine engine(10);
+	int speed;
+	cout << "С какой скоростью едем? "; cin >> speed;
+	cout << "Расход топлива - " << engine.fuel_cons_per_sec(speed) << " л/с" << endl;
 
 	Tank tank(80);
 	tank.info();
 	double fuel;
 	do
 	{
-		cout << "На сколько заправимся?"; cin >> fuel;
+		cout << "На сколько заправимся? "; cin >> fuel;
 		tank.fill(fuel);
 		tank.info();
 	} while (true);
+
+
 }
