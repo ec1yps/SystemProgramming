@@ -58,14 +58,32 @@ public:
 	}
 };
 
+#define MIN_ENGINE_CONSUMPTION	3
+#define MAX_ENGINE_CONSUMPTION	25
+
+
 class Engine
 {
-	int fuel_consumption_per_hundred;
+	const double CONSUMPTION;
+	const double DEFAULT_CONSUMPTION_PER_SECOND;
+	double consumption_per_second;
+	bool is_started;
 public:
-	Engine(int fuel_cons_per_hundred)
+ 
+	double get_consumption_per_second()const
 	{
-		cout << "Engine:" << endl;
-		this->fuel_consumption_per_hundred = fuel_cons_per_hundred;
+		return consumption_per_second;
+	}
+
+	Engine(double consumption):CONSUMPTION
+		(
+			consumption < MIN_ENGINE_CONSUMPTION ? MIN_ENGINE_CONSUMPTION :
+			consumption > MAX_ENGINE_CONSUMPTION ? MAX_ENGINE_CONSUMPTION :
+			consumption
+		),
+		DEFAULT_CONSUMPTION_PER_SECOND(CONSUMPTION*3e-5),
+		consumption_per_second(DEFAULT_CONSUMPTION_PER_SECOND)
+	{
 		cout << "Engine is ready" << endl;
 	}
 	~Engine()
@@ -73,25 +91,34 @@ public:
 		cout << "Engine is over" << endl;
 	}
 
-	double fuel_cons_per_sec(int speed)
+	void start()
 	{
-		if (speed == 0) return 0.0003;
-		else
-		{
-			return((double)(fuel_consumption_per_hundred * speed) / 360000);
-		}
+		is_started = true;
+	}
+	bool stop()
+	{
+		is_started = false;
+	}
+	bool started()const
+	{
+		return is_started;
+	}
+	void info()const
+	{
+		cout << "Consumption: " << CONSUMPTION << " liters/100km\n";
+		cout << "Default consumption: " << DEFAULT_CONSUMPTION_PER_SECOND << " liters/s\n";
+		cout << "Consumption: " << consumption_per_second << " liters/s\n";
 	}
 };
+
+//#define TANK_CHECK
+#define ENGINE_CHECK
 
 void main()
 {
 	setlocale(LC_ALL, "");
 
-	Engine engine(10);
-	int speed;
-	cout << "С какой скоростью едем? "; cin >> speed;
-	cout << "Расход топлива - " << engine.fuel_cons_per_sec(speed) << " л/с" << endl;
-
+#ifdef TANK_CHECK
 	Tank tank(80);
 	tank.info();
 	double fuel;
@@ -101,6 +128,11 @@ void main()
 		tank.fill(fuel);
 		tank.info();
 	} while (true);
+#endif // TANK_CHECK
 
+#ifdef ENGINE_CHECK
+	Engine engine(10);
+	engine.info();
+#endif // ENGINE_CHECK
 
 }
