@@ -76,6 +76,7 @@ class Engine
 	const double DEFAULT_CONSUMPTION_PER_SECOND;
 	double consumption_per_second;
 	bool is_started;
+
 public:
  
 	double get_consumption_per_second()const
@@ -104,7 +105,7 @@ public:
 	{
 		is_started = true;
 	}
-	bool stop()
+	void stop()
 	{
 		is_started = false;
 	}
@@ -165,7 +166,7 @@ public:
 	void get_out()
 	{
 		driver_inside = false;
-		if (threads_container.panel_thread.joinable())threads_container.panel_thread.join();
+		if (threads_container.panel_thread.joinable()) threads_container.panel_thread.join();
 		system("cls");
 		cout << "You are out of the Car" << endl;
 	}
@@ -186,10 +187,13 @@ public:
 				cout << "Введите объем топлива: "; cin >> fuel;
 				tank.fill(fuel);
 				break;
-				
+			case 'P':case 'p':
+				tank.get_fuel_level() != 0 && !engine.started() ? engine.start() : engine.stop();
+				break;
 			case Escape:
 				get_out();
 			}
+			
 		} while (key != Escape);
 	}
 
@@ -198,10 +202,10 @@ public:
 		while (driver_inside)
 		{
 			system("cls");
-			cout << "Fuel level: " << tank.get_fuel_level() << " liters\n";
+			cout << "Fuel level: " << (engine.started() ? tank.give_fuel(engine.get_consumption_per_second()) : tank.get_fuel_level()) << " liters\n";
 			cout << "Engine is " << (engine.started() ? "started" : "stopped") << endl;
 			cout << "Speed:\t" << speed << " km/h\n";
-			Sleep(100);
+			Sleep(1000);
 		}
 	}
 
