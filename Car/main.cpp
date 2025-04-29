@@ -80,9 +80,17 @@ class Engine
 
 public:
  
-	double get_consumption_per_second()const
+
+	double get_consumption_per_second(int speed = 0)const
 	{
-		return consumption_per_second;
+		
+		if (speed == 0) return consumption_per_second;
+		else if (speed <= 60) return .0020 * (CONSUMPTION / 10);
+		else if (speed <= 100) return .0014 * (CONSUMPTION / 10);
+		else if (speed <= 140) return .0020 * (CONSUMPTION / 10);
+		else if (speed <= 200) return .0025 * (CONSUMPTION / 10);
+		else if (speed <= 250) return .0030 * (CONSUMPTION / 10);
+		else return .0035 * (CONSUMPTION / 10);
 	}
 
 	Engine(double consumption):CONSUMPTION
@@ -114,6 +122,7 @@ public:
 	{
 		return is_started;
 	}
+
 	void info()const
 	{
 		cout << "Consumption: " << CONSUMPTION << " liters/100km\n";
@@ -259,7 +268,10 @@ public:
 
 	void engine_idle()
 	{
-		while (engine.started() && tank.give_fuel(engine.get_consumption_per_second()))
+		while (
+			engine.started() && 
+			tank.give_fuel(engine.get_consumption_per_second(speed))
+			)
 		{
 			std::this_thread::sleep_for(1s);
 		}
@@ -281,6 +293,7 @@ public:
 			cout << endl;
 			cout << "Engine is " << (engine.started() ? "started" : "stopped") << endl;
 			cout << "Speed:\t" << speed << " km/h\n";
+			cout << "Consumption: " << engine.get_consumption_per_second(speed) << " l/s\n";
 			Sleep(100);
 		}
 	}
